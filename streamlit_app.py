@@ -38,7 +38,17 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
         
-        search_on=pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
+        import urllib.parse  # Make sure this is at the top of your file
+        search_on = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
+
+        if pd.notna(search_on):  # Only proceed if it's not NaN
+          safe_search_on = urllib.parse.quote(str(search_on).strip())
+          fruityvice_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + safe_search_on)
+          fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
+        else:
+            st.warning(f"No SEARCH_ON value found for {fruit_chosen}")
+      
+        #search_on=pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
         # st.write('The search value for ', fruit_chosen,' is ', search_on, '.')
       
         st.subheader(fruit_chosen+' Nutrition Information')
